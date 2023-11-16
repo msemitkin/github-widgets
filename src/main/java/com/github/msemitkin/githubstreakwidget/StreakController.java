@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 @RestController
 public class StreakController {
@@ -14,7 +15,7 @@ public class StreakController {
     }
 
     @GetMapping("/contributions/{username}")
-    public int getTotalContributions(@PathVariable String username) {
+    public Mono<Integer> getTotalContributions(@PathVariable String username) {
         return contributionSource.getTotalContributions(username);
     }
 

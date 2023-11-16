@@ -2,6 +2,7 @@ package com.github.msemitkin.githubstreakwidget;
 
 import org.springframework.graphql.client.HttpGraphQlClient;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 import java.util.Collections;
 import java.util.List;
@@ -14,13 +15,13 @@ public class ContributionSource {
         this.httpGraphQlClient = httpGraphQlClient;
     }
 
-    public int getTotalContributions(String username) {
-        ContributionCalendar contributionCalendar = getContributionCalendar(username);
-        return contributionCalendar.getTotalContributions();
+    public Mono<Integer> getTotalContributions(String username) {
+        return getContributionCalendar(username)
+            .map(ContributionCalendar::getTotalContributions);
     }
 
     public int getCurrentStreak(String username) {
-        ContributionCalendar contributionCalendar = getContributionCalendar(username);
+        ContributionCalendar contributionCalendar = getContributionCalendar(username).blockOptional().orElseThrow();
         List<Week> weeks = contributionCalendar.getWeeks();
         Collections.reverse(weeks);
         int currentStreak = 0;
@@ -39,7 +40,7 @@ public class ContributionSource {
     }
 
     public int getLongestStreak(String username) {
-        ContributionCalendar contributionCalendar = getContributionCalendar(username);
+        ContributionCalendar contributionCalendar = getContributionCalendar(username).blockOptional().orElseThrow();
         int longestStreak = 0;
         int currentStreak = 0;
         for (Week week : contributionCalendar.getWeeks()) {
@@ -58,7 +59,7 @@ public class ContributionSource {
     }
 
 
-    private ContributionCalendar getContributionCalendar(String username) {
+    private Mono<ContributionCalendar> getContributionCalendar(String username) {
         return httpGraphQlClient
             .document("""
                 query($userName:String!) {
@@ -80,8 +81,6 @@ public class ContributionSource {
             )
             .variable("userName", username)
             .retrieve("user.contributionsCollection.contributionCalendar")
-            .toEntity(ContributionCalendar.class)
-            .blockOptional()
-            .orElseThrow();
+            .toEntity(ContributionCalendar.class);
     }
 }
