@@ -12,8 +12,8 @@ import java.io.UncheckedIOException;
 @Service
 public class ImageService {
 
-    public byte[] createImage(String text) {
-        Font font = new Font("Arial", Font.PLAIN, 48);
+    public byte[] createImage(String text, int fontSize) {
+        Font font = new Font("Arial", Font.PLAIN, fontSize);
         Size imageSize = getImageSize(text, font);
 
         BufferedImage img = new BufferedImage(imageSize.width(), imageSize.height(), BufferedImage.TYPE_INT_ARGB);

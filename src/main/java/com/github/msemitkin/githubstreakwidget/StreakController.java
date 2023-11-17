@@ -1,6 +1,8 @@
 package com.github.msemitkin.githubstreakwidget;
 
+import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -9,6 +11,7 @@ import reactor.core.publisher.Mono;
 
 @RestController
 public class StreakController {
+    private static final String DEFAULT_FONT_SIZE = "30";
     private final ContributionSource contributionSource;
     private final ImageService imageService;
 
@@ -34,21 +37,36 @@ public class StreakController {
     }
 
     @GetMapping(value = "/total-contributions/{username}", produces = MediaType.IMAGE_PNG_VALUE)
-    public byte[] getTotalContributionsImage(@PathVariable String username) {
+    public ResponseEntity<byte[]> getTotalContributionsImage(
+        @PathVariable String username,
+        @RequestParam(defaultValue = DEFAULT_FONT_SIZE) Integer fontSize
+    ) {
         int totalContributions = contributionSource.getTotalContributions(username).blockOptional().orElseThrow();
-        return imageService.createImage("👾 Total contributions: " + totalContributions);
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(imageService.createImage("👾 Total contributions: " + totalContributions, fontSize));
     }
 
     @GetMapping(value = "/current-streak/{username}", produces = MediaType.IMAGE_PNG_VALUE)
-    public byte[] getCurrentStreakImage(@PathVariable String username) {
+    public ResponseEntity<byte[]> getCurrentStreakImage(
+        @PathVariable String username,
+        @RequestParam(defaultValue = DEFAULT_FONT_SIZE) Integer fontSize
+    ) {
         int currentStreak = contributionSource.getCurrentStreak(username);
-        return imageService.createImage("🔥 Current streak: " + currentStreak);
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(imageService.createImage("🔥 Current streak: " + currentStreak, fontSize));
     }
 
     @GetMapping(value = "/longest-streak/{username}", produces = MediaType.IMAGE_PNG_VALUE)
-    public byte[] getLongestStreakImage(@PathVariable String username) {
-        int currentStreak = contributionSource.getLongestStreak(username);
-        return imageService.createImage("🔥 Longest streak: " + currentStreak);
+    public ResponseEntity<byte[]> getLongestStreakImage(
+        @PathVariable String username,
+        @RequestParam(defaultValue = DEFAULT_FONT_SIZE) Integer fontSize
+    ) {
+        int longestStreak = contributionSource.getLongestStreak(username);
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.noCache())
+            .body(imageService.createImage("🔥 Longest streak: " + longestStreak, fontSize));
     }
 
 }
