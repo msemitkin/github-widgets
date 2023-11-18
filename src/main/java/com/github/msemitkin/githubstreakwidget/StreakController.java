@@ -12,25 +12,28 @@ import reactor.core.publisher.Mono;
 @RestController
 public class StreakController {
     private static final String DEFAULT_FONT_SIZE = "30";
-    private final ContributionSource contributionSource;
+    private final ContributionService contributionService;
     private final ImageService imageService;
 
-    public StreakController(ContributionSource contributionSource, ImageService imageService) {
-        this.contributionSource = contributionSource;
+    public StreakController(
+        ContributionService contributionService,
+        ImageService imageService
+    ) {
+        this.contributionService = contributionService;
         this.imageService = imageService;
     }
 
     @GetMapping("/contributions/{username}")
     public Mono<Integer> getTotalContributions(@PathVariable String username) {
-        return contributionSource.getTotalContributions(username);
+        return contributionService.getTotalContributions(username);
     }
 
     @GetMapping("/streak/{username}")
     public int getStreak(@PathVariable String username, @RequestParam String type) {
         if (type.equals("longest")) {
-            return contributionSource.getLongestStreak(username);
+            return contributionService.getLongestStreak(username);
         } else if (type.equals("current")) {
-            return contributionSource.getCurrentStreak(username);
+            return contributionService.getCurrentStreak(username);
         } else {
             throw new IllegalArgumentException("Invalid type");
         }
@@ -41,7 +44,7 @@ public class StreakController {
         @PathVariable String username,
         @RequestParam(defaultValue = DEFAULT_FONT_SIZE) Integer fontSize
     ) {
-        int totalContributions = contributionSource.getTotalContributions(username).blockOptional().orElseThrow();
+        int totalContributions = contributionService.getTotalContributions(username).blockOptional().orElseThrow();
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
             .body(imageService.createImage("👾 Total contributions: " + totalContributions, fontSize));
@@ -52,7 +55,7 @@ public class StreakController {
         @PathVariable String username,
         @RequestParam(defaultValue = DEFAULT_FONT_SIZE) Integer fontSize
     ) {
-        int currentStreak = contributionSource.getCurrentStreak(username);
+        int currentStreak = contributionService.getCurrentStreak(username);
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
             .body(imageService.createImage("🔥 Current streak: " + currentStreak, fontSize));
@@ -63,7 +66,7 @@ public class StreakController {
         @PathVariable String username,
         @RequestParam(defaultValue = DEFAULT_FONT_SIZE) Integer fontSize
     ) {
-        int longestStreak = contributionSource.getLongestStreak(username);
+        int longestStreak = contributionService.getLongestStreak(username);
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
             .body(imageService.createImage("🔥 Longest streak: " + longestStreak, fontSize));
