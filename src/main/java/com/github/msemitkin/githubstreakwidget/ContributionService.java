@@ -1,6 +1,7 @@
 package com.github.msemitkin.githubstreakwidget;
 
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Collections;
@@ -19,46 +20,39 @@ public class ContributionService {
             .map(ContributionCalendar::getTotalContributions);
     }
 
-    public int getCurrentStreak(String username) {
-        ContributionCalendar contributionCalendar = contributionSource.getContributionCalendar(username)
-            .blockOptional()
-            .orElseThrow();
-        List<Week> weeks = contributionCalendar.getWeeks();
-        Collections.reverse(weeks);
-        int currentStreak = 0;
-        for (Week week : weeks) {
-            List<ContributionDay> contributionDays = week.getContributionDays();
-            Collections.reverse(contributionDays);
-            for (ContributionDay contributionDay : contributionDays) {
-                if (contributionDay.getContributionCount() > 0) {
-                    currentStreak++;
-                } else {
-                    return currentStreak;
-                }
-            }
-        }
-        return currentStreak;
+    public Mono<Integer> getCurrentStreak(String username) {
+        return getContributionDays(username)
+            .flatMapIterable(it -> {
+                Collections.reverse(it);
+                return it;
+            })
+            .takeWhile(contributionDay -> contributionDay.getContributionCount() > 0)
+            .count()
+            .map(Long::intValue);
     }
 
-    public int getLongestStreak(String username) {
-        ContributionCalendar contributionCalendar = contributionSource.getContributionCalendar(username)
-            .blockOptional()
-            .orElseThrow();
-        int longestStreak = 0;
-        int currentStreak = 0;
-        for (Week week : contributionCalendar.getWeeks()) {
-            for (ContributionDay contributionDay : week.getContributionDays()) {
-                if (contributionDay.getContributionCount() > 0) {
-                    currentStreak++;
-                    if (currentStreak > longestStreak) {
-                        longestStreak = currentStreak;
+    public Mono<Integer> getLongestStreak(String username) {
+        return getContributionDays(username)
+            .map(contributionDays -> {
+                int longestStreak = 0;
+                int currentStreak = 0;
+                for (ContributionDay contributionDay : contributionDays) {
+                    if (contributionDay.getContributionCount() > 0) {
+                        currentStreak++;
+                        longestStreak = Math.max(longestStreak, currentStreak);
+                    } else {
+                        currentStreak = 0;
                     }
-                } else {
-                    currentStreak = 0;
                 }
-            }
-        }
-        return longestStreak;
+                return longestStreak;
+            });
+    }
+
+    private Mono<List<ContributionDay>> getContributionDays(String username) {
+        return contributionSource.getContributionCalendar(username)
+            .flatMapMany(contributionCalendar -> Flux.fromIterable(contributionCalendar.getWeeks()))
+            .flatMap(week -> Flux.fromIterable(week.getContributionDays()))
+            .collectList();
     }
 
 }

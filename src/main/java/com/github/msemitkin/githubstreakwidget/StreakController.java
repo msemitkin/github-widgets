@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 @RestController
 public class StreakController {
@@ -20,27 +21,30 @@ public class StreakController {
     }
 
     @GetMapping(value = "/total-contributions/{username}", produces = "image/svg+xml")
-    public ResponseEntity<byte[]> getTotalContributionsImage(@PathVariable String username) {
-        int totalContributions = contributionService.getTotalContributions(username).blockOptional().orElseThrow();
-        return ResponseEntity.ok()
-            .cacheControl(CacheControl.noCache())
-            .body(imageService.createSvg(totalContributions, "Total contributions"));
+    public Mono<ResponseEntity<byte[]>> getTotalContributionsImage(@PathVariable String username) {
+        return contributionService.getTotalContributions(username)
+            .map(totalContributions -> imageService.createSvg(totalContributions, "Total contributions"))
+            .map(image -> ResponseEntity.ok()
+                .cacheControl(CacheControl.noCache())
+                .body(image));
     }
 
     @GetMapping(value = "/current-streak/{username}", produces = "image/svg+xml")
-    public ResponseEntity<byte[]> getCurrentStreakImage(@PathVariable String username) {
-        int currentStreak = contributionService.getCurrentStreak(username);
-        return ResponseEntity.ok()
-            .cacheControl(CacheControl.noCache())
-            .body(imageService.createSvg(currentStreak, "Current streak"));
+    public Mono<ResponseEntity<byte[]>> getCurrentStreakImage(@PathVariable String username) {
+        return contributionService.getCurrentStreak(username)
+            .map(streak -> imageService.createSvg(streak, "Current streak"))
+            .map(image -> ResponseEntity.ok()
+                .cacheControl(CacheControl.noCache())
+                .body(image));
     }
 
     @GetMapping(value = "/longest-streak/{username}", produces = "image/svg+xml")
-    public ResponseEntity<byte[]> getLongestStreakImage(@PathVariable String username) {
-        int longestStreak = contributionService.getLongestStreak(username);
-        return ResponseEntity.ok()
-            .cacheControl(CacheControl.noCache())
-            .body(imageService.createSvg(longestStreak, "Longest streak"));
+    public Mono<ResponseEntity<byte[]>> getLongestStreakImage(@PathVariable String username) {
+        return contributionService.getLongestStreak(username)
+            .map(streak -> imageService.createSvg(streak, "Longest streak"))
+            .map(image -> ResponseEntity.ok()
+                .cacheControl(CacheControl.noCache())
+                .body(image));
     }
 
 }
