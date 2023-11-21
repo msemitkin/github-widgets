@@ -1,7 +1,6 @@
 package com.github.msemitkin.githubstreakwidget;
 
 import org.springframework.http.CacheControl;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,7 +37,7 @@ public class StreakController {
         }
     }
 
-    @GetMapping(value = "/total-contributions/{username}", produces = MediaType.TEXT_XML_VALUE)
+    @GetMapping(value = "/total-contributions/{username}", produces = "image/svg+xml")
     public ResponseEntity<byte[]> getTotalContributionsImage(@PathVariable String username) {
         int totalContributions = contributionService.getTotalContributions(username).blockOptional().orElseThrow();
         return ResponseEntity.ok()
@@ -46,7 +45,7 @@ public class StreakController {
             .body(imageService.createSvg(totalContributions, "Total contributions"));
     }
 
-    @GetMapping(value = "/current-streak/{username}", produces = MediaType.TEXT_XML_VALUE)
+    @GetMapping(value = "/current-streak/{username}", produces = "image/svg+xml")
     public ResponseEntity<byte[]> getCurrentStreakImage(@PathVariable String username) {
         int currentStreak = contributionService.getCurrentStreak(username);
         return ResponseEntity.ok()
@@ -54,7 +53,7 @@ public class StreakController {
             .body(imageService.createSvg(currentStreak, "Current streak"));
     }
 
-    @GetMapping(value = "/longest-streak/{username}", produces = MediaType.TEXT_XML_VALUE)
+    @GetMapping(value = "/longest-streak/{username}", produces = "image/svg+xml")
     public ResponseEntity<byte[]> getLongestStreakImage(@PathVariable String username) {
         int longestStreak = contributionService.getLongestStreak(username);
         return ResponseEntity.ok()
