@@ -7,6 +7,9 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Timed;
 
+import java.time.Duration;
+import java.util.concurrent.TimeoutException;
+
 @Component
 public class ContributionSource {
     private static final Logger logger = LoggerFactory.getLogger(ContributionSource.class);
@@ -42,6 +45,8 @@ public class ContributionSource {
             .toEntity(ContributionCalendar.class)
             .timed()
             .doOnNext(it -> logger.info("ContributionSource.getContributionCalendar: {}", it.elapsed()))
+            .timeout(Duration.ofSeconds(3))
+            .onErrorMap(TimeoutException.class, e -> new GitHubIntegrationException("GitHub server request timeout", e))
             .map(Timed::get);
     }
 }
