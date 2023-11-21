@@ -7,17 +7,17 @@ public class ImageService {
 
     public byte[] createSvg(int number, String text) {
         return """
-            <svg xmlns="http://www.w3.org/2000/svg" style="isolation: isolate" width="164px" height="170px"
+            <svg xmlns="http://www.w3.org/2000/svg" style="isolation: isolate" width="168px" height="174px"
                  direction="ltr">
                 <defs>
                     <mask id="mask_out_ring_behind_fire">
-                        <rect width="495" height="195" fill="white"/>
+                        <rect width="168" height="174" fill="white"/>
                         <ellipse id="mask-ellipse" cx="82.5" cy="32" rx="10" ry="18" fill="black"/>
                     </mask>
                        
                 </defs>
                 <g style="isolation: isolate">
-                    <rect stroke="#E4E2E2" fill="#FFFEFE" rx="4.5" x="0.5" y="0.5" width="164" height="170"/>
+                    <rect stroke="#E4E2E2" fill="#FFFEFE" rx="4.5" x="2" y="2" width="164" height="170"/>
                 </g>
                 <g style="isolation: isolate">
                     <g transform="translate(82.5,48)">
