@@ -1,5 +1,6 @@
 package com.github.msemitkin.githubstreakwidget;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.graphql.client.HttpGraphQlClient;
@@ -9,9 +10,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class Config {
 
     @Bean
-    public HttpGraphQlClient httpGraphQlClient(WebClient webClient) {
+    public HttpGraphQlClient httpGraphQlClient(
+        WebClient webClient,
+        @Value("${github.token}") String githubToken
+    ) {
         return HttpGraphQlClient.builder(webClient)
-            .header("Authorization", "Bearer " + System.getenv("GITHUB_TOKEN"))
+            .header("Authorization", "Bearer " + githubToken)
             .build();
     }
 

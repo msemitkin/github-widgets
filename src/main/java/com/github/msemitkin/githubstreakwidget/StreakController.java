@@ -4,9 +4,7 @@ import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Mono;
 
 @RestController
 public class StreakController {
@@ -19,22 +17,6 @@ public class StreakController {
     ) {
         this.contributionService = contributionService;
         this.imageService = imageService;
-    }
-
-    @GetMapping("/contributions/{username}")
-    public Mono<Integer> getTotalContributions(@PathVariable String username) {
-        return contributionService.getTotalContributions(username);
-    }
-
-    @GetMapping("/streak/{username}")
-    public int getStreak(@PathVariable String username, @RequestParam String type) {
-        if (type.equals("longest")) {
-            return contributionService.getLongestStreak(username);
-        } else if (type.equals("current")) {
-            return contributionService.getCurrentStreak(username);
-        } else {
-            throw new IllegalArgumentException("Invalid type");
-        }
     }
 
     @GetMapping(value = "/total-contributions/{username}", produces = "image/svg+xml")
