@@ -11,7 +11,6 @@ import reactor.core.publisher.Mono;
 
 @RestController
 public class StreakController {
-    private static final String DEFAULT_FONT_SIZE = "30";
     private final ContributionService contributionService;
     private final ImageService imageService;
 
@@ -39,37 +38,28 @@ public class StreakController {
         }
     }
 
-    @GetMapping(value = "/total-contributions/{username}", produces = MediaType.IMAGE_PNG_VALUE)
-    public ResponseEntity<byte[]> getTotalContributionsImage(
-        @PathVariable String username,
-        @RequestParam(defaultValue = DEFAULT_FONT_SIZE) Integer fontSize
-    ) {
+    @GetMapping(value = "/total-contributions/{username}", produces = MediaType.TEXT_XML_VALUE)
+    public ResponseEntity<byte[]> getTotalContributionsImage(@PathVariable String username) {
         int totalContributions = contributionService.getTotalContributions(username).blockOptional().orElseThrow();
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
-            .body(imageService.createImage("👾 Total contributions: " + totalContributions, fontSize));
+            .body(imageService.createSvg(totalContributions, "Total contributions"));
     }
 
-    @GetMapping(value = "/current-streak/{username}", produces = MediaType.IMAGE_PNG_VALUE)
-    public ResponseEntity<byte[]> getCurrentStreakImage(
-        @PathVariable String username,
-        @RequestParam(defaultValue = DEFAULT_FONT_SIZE) Integer fontSize
-    ) {
+    @GetMapping(value = "/current-streak/{username}", produces = MediaType.TEXT_XML_VALUE)
+    public ResponseEntity<byte[]> getCurrentStreakImage(@PathVariable String username) {
         int currentStreak = contributionService.getCurrentStreak(username);
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
-            .body(imageService.createImage("🔥 Current streak: " + currentStreak, fontSize));
+            .body(imageService.createSvg(currentStreak, "Current streak"));
     }
 
-    @GetMapping(value = "/longest-streak/{username}", produces = MediaType.IMAGE_PNG_VALUE)
-    public ResponseEntity<byte[]> getLongestStreakImage(
-        @PathVariable String username,
-        @RequestParam(defaultValue = DEFAULT_FONT_SIZE) Integer fontSize
-    ) {
+    @GetMapping(value = "/longest-streak/{username}", produces = MediaType.TEXT_XML_VALUE)
+    public ResponseEntity<byte[]> getLongestStreakImage(@PathVariable String username) {
         int longestStreak = contributionService.getLongestStreak(username);
         return ResponseEntity.ok()
             .cacheControl(CacheControl.noCache())
-            .body(imageService.createImage("🔥 Longest streak: " + longestStreak, fontSize));
+            .body(imageService.createSvg(longestStreak, "Longest streak"));
     }
 
 }
