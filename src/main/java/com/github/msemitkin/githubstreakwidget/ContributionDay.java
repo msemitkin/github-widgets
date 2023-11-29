@@ -5,6 +5,14 @@ public class ContributionDay {
     private Integer contributionCount;
     private String date;
 
+    public ContributionDay() {
+    }
+
+    public ContributionDay(Integer contributionCount, String date) {
+        this.contributionCount = contributionCount;
+        this.date = date;
+    }
+
     public Integer getContributionCount() {
         return contributionCount;
     }

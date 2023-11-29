@@ -6,6 +6,13 @@ import java.util.List;
 public class Week {
     private List<ContributionDay> contributionDays;
 
+    public Week() {
+    }
+
+    public Week(List<ContributionDay> contributionDays) {
+        this.contributionDays = contributionDays;
+    }
+
     public List<ContributionDay> getContributionDays() {
         return contributionDays;
     }
