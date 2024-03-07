@@ -5,7 +5,6 @@ plugins {
 }
 
 group = 'com.github.msemitkin'
-version = '0.0.1-SNAPSHOT'
 
 java {
     sourceCompatibility = '21'
@@ -13,6 +12,10 @@ java {
 
 repositories {
     mavenCentral()
+}
+
+jar {
+    enabled = false
 }
 
 dependencies {
