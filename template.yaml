@@ -16,7 +16,7 @@ Resources:
         Variables:
           GITHUB_TOKEN: !Ref GithubToken
       Events:
-        HelloWorld:
+        ApiEvent:
           Type: Api
           Properties:
             Path: /{proxy+}
@@ -24,3 +24,6 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 512
+      SnapStart:
+        ApplyOn: "PublishedVersions"
+      AutoPublishAlias: "prod"
