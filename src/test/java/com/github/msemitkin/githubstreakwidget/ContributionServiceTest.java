@@ -60,7 +60,7 @@ class ContributionServiceTest {
         when(contributionSource.getContributionCalendar(username)).thenReturn(Mono.just(contributionCalendar));
 
         StepVerifier.create(contributionService.getCurrentStreak(username))
-            .expectNext(0)
+            .expectNext(3)
             .verifyComplete();
     }
 
@@ -73,7 +73,8 @@ class ContributionServiceTest {
                 new ContributionDay(0, "2022-01-01"),
                 new ContributionDay(1, "2022-01-02"),
                 new ContributionDay(1, "2022-01-03"),
-                new ContributionDay(1, "2022-01-04")
+                new ContributionDay(1, "2022-01-04"),
+                new ContributionDay(1, "2022-01-05")
             ))
         ));
 
@@ -81,7 +82,7 @@ class ContributionServiceTest {
             .thenReturn(Mono.just(contributionCalendar));
 
         StepVerifier.create(contributionService.getCurrentStreak(username))
-            .expectNext(3)
+            .expectNext(4)
             .verifyComplete();
     }
 
