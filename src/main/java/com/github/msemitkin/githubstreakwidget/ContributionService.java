@@ -22,12 +22,14 @@ public class ContributionService {
 
     public Mono<Integer> getCurrentStreak(String username) {
         return getContributionDays(username)
-            .flatMapIterable(it -> {
-                Collections.reverse(it);
-                return it;
+            .map(contributionDays -> {
+                Collections.reverse(contributionDays);
+                boolean firstDayHasContributions = contributionDays.getFirst().getContributionCount() > 0;
+                return contributionDays.stream()
+                           .skip(1)
+                           .takeWhile(contributionDay -> contributionDay.getContributionCount() > 0)
+                           .count() + (firstDayHasContributions ? 1 : 0);
             })
-            .takeWhile(contributionDay -> contributionDay.getContributionCount() > 0)
-            .count()
             .map(Long::intValue);
     }
 
