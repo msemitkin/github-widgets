@@ -22,4 +22,4 @@ jobs:
           echo "JAVA_HOME: $JAVA_HOME"
           java --version
       - name: Native compile
-        run: gradlew nativeCompile
+        run: ./gradlew nativeCompile
