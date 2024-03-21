@@ -1,0 +1,24 @@
+on:
+  push:
+    branches:
+      - actions
+#      - prod
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '17'
+          version: '22.3.1'
+          distribution: 'graalvm'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          set-java-home: true
+      - name: Test step
+        run: |
+          echo "GRAALVM_HOME: $GRAALVM_HOME"
+          echo "JAVA_HOME: $JAVA_HOME"
+          java --version
+      - name: Native compile
+        run: gradlew nativeCompile
