@@ -22,6 +22,6 @@ Resources:
             PayloadFormatVersion: '1.0'
       Architectures:
         - arm64
-      MemorySize: 512
+      MemorySize: 256
     Metadata:
       BuildMethod: makefile
