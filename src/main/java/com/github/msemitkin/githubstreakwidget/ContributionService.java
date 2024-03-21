@@ -24,7 +24,7 @@ public class ContributionService {
         return getContributionDays(username)
             .map(contributionDays -> {
                 Collections.reverse(contributionDays);
-                boolean firstDayHasContributions = contributionDays.getFirst().getContributionCount() > 0;
+                boolean firstDayHasContributions = contributionDays.get(0).getContributionCount() > 0;
                 return contributionDays.stream()
                            .skip(1)
                            .takeWhile(contributionDay -> contributionDay.getContributionCount() > 0)

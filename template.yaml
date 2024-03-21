@@ -9,21 +9,19 @@ Resources:
   Function:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.github.msemitkin.githubstreakwidget.lambda.LambdaHandler::handleRequest
-      Runtime: java21
+      Handler: none # Native runtime does not need a handler
+      Runtime: provided.al2
       CodeUri: .
       Environment:
         Variables:
           GITHUB_TOKEN: !Ref GithubToken
       Events:
-        ApiEvent:
-          Type: Api
+        HttpApiEvent:
+          Type: HttpApi
           Properties:
-            Path: /{proxy+}
-            Method: ANY
+            PayloadFormatVersion: '1.0'
       Architectures:
-        - x86_64
+        - arm64
       MemorySize: 512
-      SnapStart:
-        ApplyOn: "PublishedVersions"
-      AutoPublishAlias: "prod"
+    Metadata:
+      BuildMethod: makefile
