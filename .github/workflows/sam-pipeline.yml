@@ -15,6 +15,7 @@ jobs:
           distribution: 'graalvm'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           set-java-home: true
+      - uses: gradle/actions/setup-gradle@v3
       - name: Test step
         run: |
           echo "GRAALVM_HOME: $GRAALVM_HOME"
