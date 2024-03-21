@@ -25,7 +25,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
       - run: sam build
-      - with:
+      - env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           sam deploy --stack-name github-streak-widget-test --resolve-s3 --s3-prefix github-streak-widget --region us-east-1 --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset --parameter-overrides GithubToken=$GH_TOKEN
